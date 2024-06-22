@@ -1,5 +1,3 @@
-# GestureControl
+# Page Gesture Control
 
-This is just a simple project to test gestures!
-
-I'll try to develop a real thing now XD
+I want to create a website completely usable through gestures and tracking hands movements
