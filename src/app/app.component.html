@@ -1,0 +1,31 @@
+<div class="flex flex-column align-items-center gap-5">
+  <div>
+    <h3>I'm a hand detector!</h3>
+    <small class="text-xs">Click on load to start recognizing hands</small>
+  </div>
+
+  <div>I can see: {{ handsNumber }} hands!</div>
+  <p-button label="Load" (onClick)="start()"></p-button>
+  <p-button
+    severity="secondary"
+    label="Capture current hands"
+    (onClick)="captureCurrentHands()"
+  ></p-button>
+
+  <div>
+    <!--     
+    @if(isMiddleFinger){
+    <span class="text-xl">🖕🏻</span>
+    } @if(isThumbsUp){
+    <span class="text-xl">👍🏻</span>
+    } -->
+  </div>
+  <video #video id="video" class="w-4 h-4 fixed bottom-0 right-0"></video>
+  @for( post of repeat; track $index ){
+  <p-card header="Simple Card" class="my-2">
+    <p class="m-0">
+      {{ post }}
+    </p>
+  </p-card>
+  }
+</div>
