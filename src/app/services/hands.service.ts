@@ -76,25 +76,19 @@ export class HandsService {
         Math.abs(indexTip.x - middleTip.x) <= 20 &&
         Math.abs(indexTip.x - middleTip.x) <= 20;
 
-      // console.log(
-      //   thumbPinkyRingTipsCloseX,
-      //   thumbPinkyRingTipsCloseY,
-      //   indexAndMiddleClose,
-      //   thumbTip,
-      //   pinkyTip,
-      //   ringTip,
-      //   Math.abs(thumbTip.y - pinkyTip.y),
-      //   Math.abs(thumbTip.y - ringTip.y),
-      //   Math.abs(ringTip.y - pinkyTip.y),
-      //   Math.abs(thumbTip.x - pinkyTip.x),
-      //   Math.abs(thumbTip.x - ringTip.x),
-      //   Math.abs(ringTip.x - pinkyTip.x)
-      // );
-
       return (
         thumbPinkyRingTipsCloseX &&
         thumbPinkyRingTipsCloseY &&
         indexAndMiddleClose
+      );
+    });
+  }
+
+  indexCursorActive(hands: handPoseDetection.Hand[]) {
+    return hands.some((hand) => {
+      return (
+        Math.min(...hand.keypoints.map((kp) => kp.y)) ===
+        hand.keypoints[handKeypoint.indexTip].y
       );
     });
   }

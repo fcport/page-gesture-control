@@ -26,6 +26,22 @@
     <p class="m-0">
       {{ post }}
     </p>
+    <p-button severity="primary" label="Open"></p-button>
   </p-card>
   }
 </div>
+
+<div class="w-4 h-4 fixed top-0 right-0">
+  {{ readyToScroll ? "Ready to scroll" : "" }}
+  {{ indexCursor ? "Ready cursor" : "" }} - {{ proportionFactorX }} -
+  {{ proportionFactorY }}
+</div>
+
+<div
+  #cursor
+  class="w-1rem h-1rem fixed border-circle bg-pink-200 border-1 border-black text-sx"
+  [ngStyle]="{
+    top: topFromIndex() + 'px',
+    right: rightFromIndex() + 'px'
+  }"
+></div>

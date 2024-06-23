@@ -7,6 +7,9 @@ import { audit } from 'rxjs';
 export class CameraServiceService {
   constructor() {}
 
+  proportionFactorX = 0;
+  proportionFactorY = 0;
+
   async initCamera(videoElment: HTMLVideoElement) {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       throw new Error(
@@ -18,6 +21,8 @@ export class CameraServiceService {
       video: {
         facingMode: 'user',
         frameRate: { ideal: 30 },
+        width: 640,
+        height: 480,
       },
       audio: false,
     });
@@ -30,5 +35,17 @@ export class CameraServiceService {
     });
 
     videoElment.play();
+  }
+
+  setupProportionFactor(
+    window: { width: number; height: number },
+    camera: { width: number; height: number }
+  ) {
+    this.proportionFactorX = window.width / camera.width;
+    this.proportionFactorY = window.height / camera.height;
+
+    // if (window[isMax] >= camera[isMax]) {
+    //   this.proportionFactor = window.width / camera.width;
+    // }
   }
 }
