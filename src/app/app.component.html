@@ -12,26 +12,19 @@
     (onClick)="captureCurrentHands()"
   ></p-button>
 
-  <div>
-    <!--     
-    @if(isMiddleFinger){
-    <span class="text-xl">🖕🏻</span>
-    } @if(isThumbsUp){
-    <span class="text-xl">👍🏻</span>
-    } -->
-  </div>
   <video #video id="video" class="w-4 h-4 fixed bottom-0 right-0"></video>
   @for( post of repeat; track $index ){
   <p-card header="Simple Card" class="my-2">
     <p class="m-0">
       {{ post }}
     </p>
-    <p-button #actionButton severity="primary" label="Open"></p-button>
+
+    <button pButton severity="primary" label="Open" #actionButton></button>
   </p-card>
   }
 </div>
 
-<div class="w-4 h-4 fixed top-0 right-0">
+<div class="w-4 h-4 fixed top-0 right-0 background-white">
   {{ actionRequired === "scroll-down" ? "Ready to scroll" : "" }}
   {{ actionRequired === "index-cursor" }} - {{ proportionFactorX }} -
   {{ proportionFactorY }}

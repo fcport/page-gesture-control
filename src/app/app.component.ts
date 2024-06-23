@@ -123,31 +123,33 @@ export class AppComponent {
       this.previousPosition.middleTipY !== 0
     ) {
       if (
-        //se vedo che vado giu piu' di 10 scrollo in basso
+        //se vedo che vado giu piu' di un tot scrollo in basso
         this.previousPosition.indexTipY < currentHandIndexTipY &&
         this.previousPosition.middleTipY < currentHandMiddleTipY &&
         Math.abs(this.previousPosition.middleTipY - currentHandMiddleTipY) >
-          70 &&
-        Math.abs(this.previousPosition.middleTipY - currentHandMiddleTipY) > 70
+          50 &&
+        Math.abs(this.previousPosition.indexTipY - currentHandIndexTipY) > 50
       ) {
-        const yDiff = Math.abs(
+        const yDiffIndex = Math.abs(
+          this.previousPosition.indexTipY - currentHandIndexTipY
+        );
+        const yDiffMiddle = Math.abs(
           this.previousPosition.middleTipY - currentHandMiddleTipY
         );
 
-        if (yDiff > 150) {
+        // console.log(yDiffIndex, yDiffMiddle);
+
+        if (yDiffIndex > 65) {
           window.scrollBy(0, 400);
         } else {
           window.scrollBy(0, 100);
         }
-
-        this.previousPosition = { indexTipY: 0, middleTipY: 0 };
       }
-
-      this.previousPosition.indexTipY =
-        this.hands[0].keypoints[handKeypoint.indexTip].y;
-      this.previousPosition.middleTipY =
-        this.hands[0].keypoints[handKeypoint.middleTip].y;
     }
+    this.previousPosition.indexTipY =
+      this.hands[0].keypoints[handKeypoint.indexTip].y;
+    this.previousPosition.middleTipY =
+      this.hands[0].keypoints[handKeypoint.middleTip].y;
 
     //-------------------
     //   INDEX CURSOR
@@ -213,18 +215,15 @@ export class AppComponent {
     if (this.hasClicked) return;
 
     const elementToClick = this.allClickableElements().find((element) => {
-      console.log(this.cursorElement().nativeElement, element.el, element);
       return this.isOverlapping(
         this.cursorElement().nativeElement,
-        element.el.nativeElement
+        element.nativeElement
       );
     });
 
-    // console.log(elementToClick);
     this.hasClicked = true;
 
     if (elementToClick) {
-      alert('I AM CLICKING MOTHERFYCJER');
       this.hasClicked = true;
       setTimeout(() => {
         this.hasClicked = false;
@@ -236,7 +235,7 @@ export class AppComponent {
     if (!cursor || !otherElement) {
       return;
     }
-    console.log(cursor, otherElement);
+    // console.log(cursor, otherElement);
 
     const fixedRect = cursor.getBoundingClientRect();
     const otherRect = otherElement.getBoundingClientRect();

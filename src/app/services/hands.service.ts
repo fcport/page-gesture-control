@@ -16,31 +16,20 @@ export class HandsService {
       const indexTip = hand.keypoints[handKeypoint.indexTip];
       const middleTip = hand.keypoints[handKeypoint.middleTip];
 
-      const thumbPinkyRingTipsCloseX =
+      const thumbPinkyTipsCloseX =
         Math.abs(thumbTip.x - pinkyTip.x) <= 35 &&
-        Math.abs(thumbTip.x - ringTip.x) <= 20 &&
-        Math.abs(ringTip.x - pinkyTip.x) <= 25;
+        Math.abs(thumbTip.y - pinkyTip.y) <= 35;
 
-      const thumbPinkyRingTipsCloseY =
-        Math.abs(thumbTip.y - pinkyTip.y) <= 45 &&
-        Math.abs(thumbTip.y - ringTip.y) <= 20 &&
-        Math.abs(ringTip.y - pinkyTip.y) <= 25;
-
-      const indexAndMiddleClose =
-        Math.abs(indexTip.y - middleTip.y) <= 20 &&
-        Math.abs(indexTip.y - middleTip.y) <= 20 &&
-        Math.abs(indexTip.x - middleTip.x) <= 20 &&
-        Math.abs(indexTip.x - middleTip.x) <= 20;
-
-      // const indexAndMiddleUpRingDown =
-      //   indexTip.y < hand.keypoints[handKeypoint.indexDip].y &&
-      //   middleTip.y < hand.keypoints[handKeypoint.middleDip].y &&
-      //   ringTip.y > hand.keypoints[handKeypoint.ringDip].y;
+      const indexRingAndMiddleClose =
+        Math.abs(indexTip.y - middleTip.y) <= 25 &&
+        Math.abs(indexTip.y - middleTip.y) <= 25 &&
+        Math.abs(indexTip.x - middleTip.x) <= 25 &&
+        Math.abs(indexTip.x - middleTip.x) <= 25 &&
+        Math.abs(middleTip.y - ringTip.y) <= 25 &&
+        Math.abs(middleTip.x - ringTip.x) <= 25;
 
       return (
-        thumbPinkyRingTipsCloseX &&
-        thumbPinkyRingTipsCloseY &&
-        indexAndMiddleClose
+        thumbPinkyTipsCloseX && indexRingAndMiddleClose
         // indexAndMiddleUpRingDown
       );
     });
