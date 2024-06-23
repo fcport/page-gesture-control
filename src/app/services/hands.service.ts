@@ -8,50 +8,6 @@ import { handKeypoint } from '../constants/constants';
 export class HandsService {
   constructor() {}
 
-  isMiddleFinger(hands: handPoseDetection.Hand[]) {
-    return hands.some((hand) => {
-      const middleFingerTipTop =
-        Math.min(...hand.keypoints.map((kp) => kp.y)) ===
-        hand.keypoints[handKeypoint.middleTip].y;
-
-      const distanceMiddleTipIndexDip = Math.abs(
-        hand.keypoints[handKeypoint.middleTip].y -
-          hand.keypoints[handKeypoint.indexDip].y
-      );
-
-      const distanceMiddleTipRingDip = Math.abs(
-        hand.keypoints[handKeypoint.middleTip].y -
-          hand.keypoints[handKeypoint.ringDip].y
-      );
-
-      return (
-        middleFingerTipTop &&
-        distanceMiddleTipIndexDip > 65 &&
-        distanceMiddleTipRingDip > 65
-      );
-    });
-  }
-
-  isThumbsUp(hands: handPoseDetection.Hand[]) {
-    return hands.some((hand) => {
-      const thumbTipTop =
-        Math.min(...hand.keypoints.map((kp) => kp.y)) ===
-        hand.keypoints[handKeypoint.thumbTip].y;
-
-      const avoidContrastWithMiddleFinger =
-        hand.keypoints[handKeypoint.thumbTip].y <=
-        hand.keypoints[handKeypoint.middleTip].y;
-
-      const indexTipBelowThumbTip =
-        hand.keypoints[handKeypoint.thumbTip].y <
-        hand.keypoints[handKeypoint.indexTip].y;
-
-      return (
-        thumbTipTop && indexTipBelowThumbTip && avoidContrastWithMiddleFinger
-      );
-    });
-  }
-
   wantsToScrollDown(hands: handPoseDetection.Hand[]) {
     return hands.some((hand) => {
       const thumbTip = hand.keypoints[handKeypoint.thumbTip];
@@ -76,10 +32,16 @@ export class HandsService {
         Math.abs(indexTip.x - middleTip.x) <= 20 &&
         Math.abs(indexTip.x - middleTip.x) <= 20;
 
+      // const indexAndMiddleUpRingDown =
+      //   indexTip.y < hand.keypoints[handKeypoint.indexDip].y &&
+      //   middleTip.y < hand.keypoints[handKeypoint.middleDip].y &&
+      //   ringTip.y > hand.keypoints[handKeypoint.ringDip].y;
+
       return (
         thumbPinkyRingTipsCloseX &&
         thumbPinkyRingTipsCloseY &&
         indexAndMiddleClose
+        // indexAndMiddleUpRingDown
       );
     });
   }
@@ -88,8 +50,41 @@ export class HandsService {
     return hands.some((hand) => {
       return (
         Math.min(...hand.keypoints.map((kp) => kp.y)) ===
-        hand.keypoints[handKeypoint.indexTip].y
+          hand.keypoints[handKeypoint.indexTip].y &&
+        hand.keypoints[handKeypoint.middleTip].y >
+          hand.keypoints[handKeypoint.middleDip].y
       );
     });
   }
+
+  clickGesture(hands: handPoseDetection.Hand[]) {
+    return hands.some((hand) => {
+      return (
+        hand.keypoints[handKeypoint.indexTip].y <
+          hand.keypoints[handKeypoint.indexDip].y &&
+        hand.keypoints[handKeypoint.middleTip].y <
+          hand.keypoints[handKeypoint.middleDip].y &&
+        hand.keypoints[handKeypoint.ringTip].y <
+          hand.keypoints[handKeypoint.ringDip].y &&
+        hand.keypoints[handKeypoint.thumbTip].y <
+          hand.keypoints[handKeypoint.thumbIp].y &&
+        hand.keypoints[handKeypoint.pinkyTip].y <
+          hand.keypoints[handKeypoint.pinkyDip].y
+      );
+    });
+  }
+
+  handleHands(hands: handPoseDetection.Hand[]): ACTIONS {
+    if (this.wantsToScrollDown(hands)) {
+      return 'scroll-down';
+    } else if (this.indexCursorActive(hands)) {
+      return 'index-cursor';
+    } else if (this.clickGesture(hands)) {
+      return 'click-gesture';
+    }
+
+    return '';
+  }
 }
+
+export type ACTIONS = 'scroll-down' | 'index-cursor' | 'click-gesture' | '';

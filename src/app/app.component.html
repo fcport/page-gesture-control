@@ -26,14 +26,14 @@
     <p class="m-0">
       {{ post }}
     </p>
-    <p-button severity="primary" label="Open"></p-button>
+    <p-button #actionButton severity="primary" label="Open"></p-button>
   </p-card>
   }
 </div>
 
 <div class="w-4 h-4 fixed top-0 right-0">
-  {{ readyToScroll ? "Ready to scroll" : "" }}
-  {{ indexCursor ? "Ready cursor" : "" }} - {{ proportionFactorX }} -
+  {{ actionRequired === "scroll-down" ? "Ready to scroll" : "" }}
+  {{ actionRequired === "index-cursor" }} - {{ proportionFactorX }} -
   {{ proportionFactorY }}
 </div>
 

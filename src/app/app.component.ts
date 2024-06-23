@@ -5,9 +5,10 @@ import {
   inject,
   signal,
   viewChild,
+  viewChildren,
 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
+import { Button, ButtonModule } from 'primeng/button';
 import { CameraServiceService } from './services/camera-service.service';
 import * as handPoseDetection from '@tensorflow-models/hand-pose-detection';
 import { HandsService } from './services/hands.service';
@@ -27,6 +28,7 @@ export class AppComponent {
   cameraService = inject(CameraServiceService);
 
   videoRaw = viewChild.required<ElementRef<HTMLVideoElement>>('video');
+  allClickableElements = viewChildren<any>('actionButton');
 
   video = computed(() => this.videoRaw().nativeElement);
 
@@ -40,12 +42,6 @@ export class AppComponent {
   hands: handPoseDetection.Hand[] = [];
   handsNumber = 0;
 
-  isMiddleFinger = false;
-  isThumbsUp = false;
-
-  readyToScroll = false;
-  indexCursor = false;
-
   proportionFactorX = 0;
   proportionFactorY = 0;
 
@@ -56,7 +52,11 @@ export class AppComponent {
   topFromIndex = signal(0);
   rightFromIndex = signal(0);
 
+  actionRequired = '';
+
   cursorElement = viewChild.required<ElementRef>('cursor');
+
+  hasClicked = false;
 
   async ngOnInit() {
     this.cameraService.initCamera(this.video());
@@ -105,22 +105,20 @@ export class AppComponent {
     if (this.hands.length === 0) {
       return;
     }
-    this.isMiddleFinger = this.handsService.isMiddleFinger(this.hands);
-    this.isThumbsUp = this.handsService.isThumbsUp(this.hands);
-    this.readyToScroll = this.handsService.wantsToScrollDown(this.hands);
-    this.indexCursor = this.handsService.indexCursorActive(this.hands);
+
+    this.actionRequired = this.handsService.handleHands(this.hands);
 
     const currentHandIndexTipY =
       this.hands[0].keypoints[handKeypoint.indexTip].y;
     const currentHandMiddleTipY =
       this.hands[0].keypoints[handKeypoint.middleTip].y;
 
-    //--- SCROLL ------
-    //
+    //----------------
+    //  SCROLL
     //----------------
 
     if (
-      this.readyToScroll &&
+      this.actionRequired === 'scroll-down' &&
       this.previousPosition.indexTipY !== 0 &&
       this.previousPosition.middleTipY !== 0
     ) {
@@ -135,7 +133,6 @@ export class AppComponent {
         const yDiff = Math.abs(
           this.previousPosition.middleTipY - currentHandMiddleTipY
         );
-        // console.log(yDiff);
 
         if (yDiff > 150) {
           window.scrollBy(0, 400);
@@ -151,8 +148,13 @@ export class AppComponent {
       this.previousPosition.middleTipY =
         this.hands[0].keypoints[handKeypoint.middleTip].y;
     }
+
+    //-------------------
+    //   INDEX CURSOR
+    //--------------------
+
     if (
-      this.readyToScroll &&
+      this.actionRequired === 'index-cursor' &&
       this.previousPosition.indexTipY === 0 &&
       this.previousPosition.middleTipY === 0
     ) {
@@ -160,27 +162,34 @@ export class AppComponent {
         this.hands[0].keypoints[handKeypoint.indexTip].y;
       this.previousPosition.middleTipY =
         this.hands[0].keypoints[handKeypoint.middleTip].y;
-    }
-
-    //--- INDEX CURSOR ---
-    //
-    //--------------------
-
-    if (this.indexCursor) {
+    } else if (
+      this.actionRequired === 'index-cursor' &&
+      this.previousPosition.indexTipY !== 0 &&
+      this.previousPosition.middleTipY !== 0
+    ) {
       const indexTip = this.hands[0].keypoints[handKeypoint.indexTip];
       if (
-        Math.abs(this.topFromIndex() - indexTip.y * this.proportionFactorY) > 5
+        Math.abs(this.topFromIndex() - indexTip.y * this.proportionFactorY) > 2
       )
         this.topFromIndex.set(indexTip.y * this.proportionFactorY);
 
       if (
         Math.abs(this.rightFromIndex() - indexTip.x * this.proportionFactorX) >
-        5
+        2
       )
         this.rightFromIndex.set(indexTip.x * this.proportionFactorX);
 
       this.cursorElement().nativeElement.style.top = this.topFromIndex();
       this.cursorElement().nativeElement.style.right = this.rightFromIndex();
+    }
+
+    //-------------------
+    //   CLICK GESTURE
+    //--------------------
+
+    if (this.handsService.clickGesture(this.hands)) {
+      // console.log('should clikc');
+      this.clickRequest();
     }
   }
 
@@ -197,5 +206,46 @@ export class AppComponent {
 
   start() {
     this.renderPrediction();
+  }
+
+  clickRequest() {
+    // console.log(this.allClickableElements());
+    if (this.hasClicked) return;
+
+    const elementToClick = this.allClickableElements().find((element) => {
+      console.log(this.cursorElement().nativeElement, element.el, element);
+      return this.isOverlapping(
+        this.cursorElement().nativeElement,
+        element.el.nativeElement
+      );
+    });
+
+    // console.log(elementToClick);
+    this.hasClicked = true;
+
+    if (elementToClick) {
+      alert('I AM CLICKING MOTHERFYCJER');
+      this.hasClicked = true;
+      setTimeout(() => {
+        this.hasClicked = false;
+      }, 1500);
+    }
+  }
+
+  isOverlapping(cursor: HTMLDivElement, otherElement: any) {
+    if (!cursor || !otherElement) {
+      return;
+    }
+    console.log(cursor, otherElement);
+
+    const fixedRect = cursor.getBoundingClientRect();
+    const otherRect = otherElement.getBoundingClientRect();
+
+    return !(
+      fixedRect.right < otherRect.left ||
+      fixedRect.left > otherRect.right ||
+      fixedRect.bottom < otherRect.top ||
+      fixedRect.top > otherRect.bottom
+    );
   }
 }
