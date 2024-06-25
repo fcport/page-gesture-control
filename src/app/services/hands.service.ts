@@ -29,7 +29,37 @@ export class HandsService {
         Math.abs(middleTip.x - ringTip.x) <= 25;
 
       return (
-        thumbPinkyTipsCloseX && indexRingAndMiddleClose
+        thumbPinkyTipsCloseX &&
+        indexRingAndMiddleClose &&
+        hand.handedness === 'Right'
+        // indexAndMiddleUpRingDown
+      );
+    });
+  }
+  wantsToScrollUp(hands: handPoseDetection.Hand[]) {
+    return hands.some((hand) => {
+      const thumbTip = hand.keypoints[handKeypoint.thumbTip];
+      const pinkyTip = hand.keypoints[handKeypoint.pinkyTip];
+      const ringTip = hand.keypoints[handKeypoint.ringTip];
+      const indexTip = hand.keypoints[handKeypoint.indexTip];
+      const middleTip = hand.keypoints[handKeypoint.middleTip];
+
+      const thumbPinkyTipsCloseX =
+        Math.abs(thumbTip.x - pinkyTip.x) <= 35 &&
+        Math.abs(thumbTip.y - pinkyTip.y) <= 35;
+
+      const indexRingAndMiddleClose =
+        Math.abs(indexTip.y - middleTip.y) <= 25 &&
+        Math.abs(indexTip.y - middleTip.y) <= 25 &&
+        Math.abs(indexTip.x - middleTip.x) <= 25 &&
+        Math.abs(indexTip.x - middleTip.x) <= 25 &&
+        Math.abs(middleTip.y - ringTip.y) <= 25 &&
+        Math.abs(middleTip.x - ringTip.x) <= 25;
+
+      return (
+        thumbPinkyTipsCloseX &&
+        indexRingAndMiddleClose &&
+        hand.handedness === 'Left'
         // indexAndMiddleUpRingDown
       );
     });
@@ -66,6 +96,8 @@ export class HandsService {
   handleHands(hands: handPoseDetection.Hand[]): ACTIONS {
     if (this.wantsToScrollDown(hands)) {
       return 'scroll-down';
+    } else if (this.wantsToScrollUp(hands)) {
+      return 'scroll-up';
     } else if (this.indexCursorActive(hands)) {
       return 'index-cursor';
     } else if (this.clickGesture(hands)) {
@@ -76,4 +108,9 @@ export class HandsService {
   }
 }
 
-export type ACTIONS = 'scroll-down' | 'index-cursor' | 'click-gesture' | '';
+export type ACTIONS =
+  | 'scroll-down'
+  | 'scroll-up'
+  | 'index-cursor'
+  | 'click-gesture'
+  | '';

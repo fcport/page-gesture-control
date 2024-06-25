@@ -1,0 +1,57 @@
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Shadows+Into+Light&display=swap");
+
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 colonne */
+  // grid-template-rows: repeat(2); /* 2 righe */
+  gap: 3px;
+}
+.gesture {
+  font-size: 1.8rem;
+}
+.card {
+  border-radius: 15px;
+  min-height: 100px;
+  padding: 1rem;
+  align-items: center;
+  height: 100%;
+  font-family: "Caveat", cursive;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-size: 18px;
+  font-weight: 500;
+  font-size: 1.5rem;
+
+  h3 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 2rem;
+  }
+  h4 {
+    margin: 0;
+  }
+  ul {
+    margin: 0;
+  }
+
+  &.card-1 {
+    border: 3px solid #384de0;
+    background: rgba(126, 158, 253, 0.595);
+    grid-column: 1;
+    grid-row: 1;
+  }
+  &.card-2 {
+    border: 3px solid #238f3b;
+    background: rgba(126, 253, 142, 0.595);
+    grid-column: 2;
+    grid-row: 1;
+  }
+  &.card-3 {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    border: 3px solid #c65200;
+    background: rgba(253, 156, 126, 0.595);
+    grid-column: 1 / span 2;
+    grid-row: 2;
+  }
+}

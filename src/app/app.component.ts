@@ -15,17 +15,32 @@ import { HandsService } from './services/hands.service';
 import { handKeypoint } from './constants/constants';
 import { CardModule } from 'primeng/card';
 import { CommonModule } from '@angular/common';
+import { TutorialIconComponent } from './components/tutorial-icon/tutorial-icon.component';
+import { MessagesModule } from 'primeng/messages';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ButtonModule, CardModule, CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
+  imports: [
+    RouterOutlet,
+    ButtonModule,
+    CardModule,
+    CommonModule,
+    TutorialIconComponent,
+    MessagesModule,
+  ],
 })
 export class AppComponent {
   title = 'gesture-control';
   cameraService = inject(CameraServiceService);
+  msg = [
+    {
+      detail: "If you don't manage to make everything work, look at this video",
+      severity: 'secondary',
+    },
+  ];
 
   videoRaw = viewChild.required<ElementRef<HTMLVideoElement>>('video');
   allClickableElements = viewChildren<any>('actionButton');
@@ -40,6 +55,7 @@ export class AppComponent {
 
   detector!: handPoseDetection.HandDetector;
   hands: handPoseDetection.Hand[] = [];
+  previousHands: handPoseDetection.Hand[] = [];
   handsNumber = 0;
 
   proportionFactorX = 0;
@@ -49,8 +65,8 @@ export class AppComponent {
 
   handsService = inject(HandsService);
 
-  topFromIndex = signal(0);
-  rightFromIndex = signal(0);
+  topFromIndex = signal(window.innerHeight / 2);
+  rightFromIndex = signal(window.innerWidth / 2);
 
   actionRequired = '';
 
@@ -96,6 +112,8 @@ export class AppComponent {
         this.hands = await this.detector.estimateHands(this.video(), {
           flipHorizontal: true,
         });
+
+        this.handsNumber = this.hands.length;
       } catch (e) {
         this.detector.dispose();
         console.error(e);
@@ -103,6 +121,8 @@ export class AppComponent {
     }
 
     if (this.hands.length === 0) {
+      this.previousHands = [];
+
       return;
     }
 
@@ -118,7 +138,8 @@ export class AppComponent {
     //----------------
 
     if (
-      this.actionRequired === 'scroll-down' &&
+      (this.actionRequired === 'scroll-down' ||
+        this.actionRequired === 'scroll-up') &&
       this.previousPosition.indexTipY !== 0 &&
       this.previousPosition.middleTipY !== 0
     ) {
@@ -139,11 +160,7 @@ export class AppComponent {
 
         // console.log(yDiffIndex, yDiffMiddle);
 
-        if (yDiffIndex > 65) {
-          window.scrollBy(0, 400);
-        } else {
-          window.scrollBy(0, 100);
-        }
+        window.scrollBy(0, this.actionRequired === 'scroll-down' ? 400 : -400);
       }
     }
     this.previousPosition.indexTipY =
@@ -157,19 +174,24 @@ export class AppComponent {
 
     if (
       this.actionRequired === 'index-cursor' &&
-      this.previousPosition.indexTipY === 0 &&
-      this.previousPosition.middleTipY === 0
+      this.previousPosition.indexTipY === 0
     ) {
       this.previousPosition.indexTipY =
         this.hands[0].keypoints[handKeypoint.indexTip].y;
-      this.previousPosition.middleTipY =
-        this.hands[0].keypoints[handKeypoint.middleTip].y;
     } else if (
       this.actionRequired === 'index-cursor' &&
       this.previousPosition.indexTipY !== 0 &&
       this.previousPosition.middleTipY !== 0
     ) {
       const indexTip = this.hands[0].keypoints[handKeypoint.indexTip];
+      if (
+        this.previousHands.length !== 0 &&
+        Math.abs(this.topFromIndex() - indexTip.y * this.proportionFactorY) > 30
+      ) {
+        console.log('i had hands and now the index is changed more than 20');
+        return;
+      }
+
       if (
         Math.abs(this.topFromIndex() - indexTip.y * this.proportionFactorY) > 2
       )
@@ -193,12 +215,13 @@ export class AppComponent {
       // console.log('should clikc');
       this.clickRequest();
     }
+
+    this.previousHands = this.hands.splice(0); //splice to not have a reference but a copy
   }
 
   async renderPrediction() {
     await this.renderResult();
-    // console.log(this.hands);
-    this.handsNumber = this.hands.length;
+
     this.rafId = requestAnimationFrame(this.renderPrediction.bind(this));
   }
 
@@ -211,7 +234,7 @@ export class AppComponent {
   }
 
   clickRequest() {
-    // console.log(this.allClickableElements());
+    console.log(this.hasClicked);
     if (this.hasClicked) return;
 
     const elementToClick = this.allClickableElements().find((element) => {
@@ -219,16 +242,18 @@ export class AppComponent {
         this.cursorElement().nativeElement,
         element.nativeElement
       );
-    });
+    })?.nativeElement;
 
     this.hasClicked = true;
 
     if (elementToClick) {
       this.hasClicked = true;
-      setTimeout(() => {
-        this.hasClicked = false;
-      }, 1500);
+      console.log(elementToClick);
+      elementToClick.click();
     }
+    setTimeout(() => {
+      this.hasClicked = false;
+    }, 1500);
   }
 
   isOverlapping(cursor: HTMLDivElement, otherElement: any) {
@@ -246,5 +271,9 @@ export class AppComponent {
       fixedRect.bottom < otherRect.top ||
       fixedRect.top > otherRect.bottom
     );
+  }
+
+  cardButtonClick() {
+    console.log('click efent');
   }
 }

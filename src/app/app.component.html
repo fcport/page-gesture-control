@@ -1,40 +1,164 @@
-<div class="flex flex-column align-items-center gap-5">
-  <div>
-    <h3>I'm a hand detector!</h3>
-    <small class="text-xs">Click on load to start recognizing hands</small>
+<div class="px-7 py-8">
+  <div class="flex flex-column align-items-center gap-5">
+    <div>
+      <h1>I'm a hand gesture navigable website!</h1>
+    </div>
+
+    <div>
+      I can see: {{ handsNumber }} hand{{ handsNumber > 1 ? "s" : "" }}!
+    </div>
+
+    <div class="card-container">
+      <div class="flex flex-column gap-2 card card-1">
+        <h3>What's this?</h3>
+        <div>
+          This is a website you can navigate just with a webcam and your
+          gestures!
+        </div>
+        <div>
+          I decided to test this out while watching
+          <a href="https://charliegerard.dev/">Charlie Gerard</a>'s workshop on
+          <a href="https://frontendmasters.com/">Frontend Masters</a> about AIs.
+        </div>
+        <div>
+          That workshop was so inspiring that I wanted to create something on my
+          own!
+        </div>
+      </div>
+      <div class="flex flex-column gap-2 card card-2">
+        <h3>How does it work?</h3>
+        <div>
+          Using Tensorflow.js and a webcam it's possible to recognise hands and
+          define their keypoints or landmarks <br />
+          (see more
+          <a href="https://blog.tensorflow.org/2021/11/3D-handpose.html"
+            >here</a
+          >
+          ).
+        </div>
+        <h4>What do you need:</h4>
+        <ul>
+          <li>A webcam</li>
+          <li>To give your browser camera permissions</li>
+          <li>
+            Patience (this is just a side study-project not a production ready
+            app)
+          </li>
+        </ul>
+      </div>
+      <div class="flex flex-column gap-2 card card-3">
+        <h3>What are the gestures?</h3>
+        <div class="flex flex-row align-items-center">
+          <span class="gesture"> Scroll up: </span
+          ><app-tutorial-icon [command]="'scroll-up'" />
+          <span
+            >Hold your <strong>left</strong> hand like the image and move your
+            fingers down</span
+          >
+        </div>
+        <div class="flex flex-row align-items-center">
+          <span class="gesture">Scroll down: </span
+          ><app-tutorial-icon [command]="'scroll-down'" />
+          <span
+            >Hold your <strong>right</strong> hand like the image and move your
+            fingers down</span
+          >
+        </div>
+        <div class="flex flex-row align-items-center">
+          <span class="gesture">Cursor: </span
+          ><app-tutorial-icon [command]="'index-cursor'" />
+          <span
+            >Hold your hand like the image and move your index around <br />
+            (If the cursor stops, move slower!)</span
+          >
+        </div>
+
+        <div class="flex flex-row align-items-center">
+          <span class="gesture">Click: </span
+          ><app-tutorial-icon [command]="'click-gesture'" />
+          <span
+            >While you are moving the cursor with your index, simply show your
+            palm!</span
+          >
+        </div>
+
+        <div class="flex flex-row align-items-center">
+          Please remember that the best spot in which the commands from your
+          hands will be recognized is around the center of camera
+        </div>
+      </div>
+    </div>
+    <p-messages [value]="msg" [enableService]="false" [closable]="false" />
+
+    @for( post of repeat; track $index ){
+    <p-card header="Simple Card" class="my-2">
+      <p class="m-0">
+        {{ post }}
+      </p>
+
+      <button
+        pButton
+        (click)="cardButtonClick()"
+        severity="primary"
+        #actionButton
+        class="my-2 w-full p-fluid"
+      >
+        Open
+      </button>
+    </p-card>
+    }
   </div>
 
-  <div>I can see: {{ handsNumber }} hands!</div>
-  <p-button label="Load" (onClick)="start()"></p-button>
-  <p-button
-    severity="secondary"
-    label="Capture current hands"
-    (onClick)="captureCurrentHands()"
-  ></p-button>
+  <div class="w-4 h-4 fixed top-0 right-0 bg-blue-400 border-round-sm p-2">
+    {{ actionRequired === "scroll-down" ? "Ready to scroll down" : "" }}
+    {{ actionRequired === "scroll-up" ? "Ready to scroll up" : "" }}
+    {{
+      actionRequired === "index-cursor"
+        ? "Move your index to move the cursor!"
+        : ""
+    }}
+  </div>
 
-  <video #video id="video" class="w-4 h-4 fixed bottom-0 right-0"></video>
-  @for( post of repeat; track $index ){
-  <p-card header="Simple Card" class="my-2">
-    <p class="m-0">
-      {{ post }}
-    </p>
-
-    <button pButton severity="primary" label="Open" #actionButton></button>
-  </p-card>
-  }
+  <div
+    #cursor
+    class="w-1rem h-1rem fixed z-5"
+    [ngStyle]="{
+      top: topFromIndex() + 'px',
+      right: rightFromIndex() + 'px'
+    }"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      x="0px"
+      y="0px"
+      width="30"
+      height="30"
+      viewBox="0 0 48 48"
+    >
+      <path
+        fill="#35c1f1"
+        d="M14,7.054v30.663c0,0.91,1.062,1.407,1.761,0.824l7.078-5.903l4.664,10.728	c0.232,0.533,0.851,0.777,1.384,0.545l1.865-0.811L14.634,6.091C14.276,6.246,14,6.593,14,7.054z"
+      ></path>
+      <linearGradient
+        id="rZhYTz_WbDq4~sF07d3Vpa_wXT0qzqdjY0S_gr1"
+        x1="21.384"
+        x2="35.554"
+        y1="6.317"
+        y2="39.054"
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop offset="0" stop-color="#46dff9"></stop>
+        <stop offset="1" stop-color="#07d6f9"></stop>
+      </linearGradient>
+      <path
+        fill="url(#rZhYTz_WbDq4~sF07d3Vpa_wXT0qzqdjY0S_gr1)"
+        d="M33.089,40.938l-4.628-10.647l8.1-0.726c0.907-0.081,1.307-1.184,0.663-1.828L15.796,6.31	c-0.336-0.336-0.793-0.379-1.162-0.219l16.118,37.011l1.792-0.779C33.077,42.091,33.321,41.471,33.089,40.938z"
+      ></path>
+      <path
+        fill="#199be2"
+        d="M33.089,40.938l-4.628-10.647l8.1-0.726c0.907-0.081,1.307-1.184,0.663-1.828L15.796,6.31	c-0.336-0.336-0.793-0.379-1.162-0.219l16.118,37.011l1.792-0.779C33.077,42.091,33.321,41.471,33.089,40.938z"
+      ></path>
+    </svg>
+  </div>
 </div>
-
-<div class="w-4 h-4 fixed top-0 right-0 background-white">
-  {{ actionRequired === "scroll-down" ? "Ready to scroll" : "" }}
-  {{ actionRequired === "index-cursor" }} - {{ proportionFactorX }} -
-  {{ proportionFactorY }}
-</div>
-
-<div
-  #cursor
-  class="w-1rem h-1rem fixed border-circle bg-pink-200 border-1 border-black text-sx"
-  [ngStyle]="{
-    top: topFromIndex() + 'px',
-    right: rightFromIndex() + 'px'
-  }"
-></div>
+<video #video id="video" class="w-4 h-4 fixed bottom-0 right-0"></video>
