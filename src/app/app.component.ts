@@ -1,6 +1,7 @@
 import {
   Component,
   ElementRef,
+  Signal,
   computed,
   inject,
   signal,
@@ -12,11 +13,12 @@ import { Button, ButtonModule } from 'primeng/button';
 import { CameraServiceService } from './services/camera-service.service';
 import * as handPoseDetection from '@tensorflow-models/hand-pose-detection';
 import { HandsService } from './services/hands.service';
-import { handKeypoint } from './constants/constants';
+import { handKeypoint, cards } from './constants/constants';
 import { CardModule } from 'primeng/card';
 import { CommonModule } from '@angular/common';
 import { TutorialIconComponent } from './components/tutorial-icon/tutorial-icon.component';
 import { MessagesModule } from 'primeng/messages';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'app-root',
@@ -29,18 +31,24 @@ import { MessagesModule } from 'primeng/messages';
     CardModule,
     CommonModule,
     TutorialIconComponent,
+    DialogModule,
     MessagesModule,
   ],
 })
 export class AppComponent {
+  dislikeButtonClick() {
+    throw new Error('Method not implemented.');
+  }
   title = 'gesture-control';
   cameraService = inject(CameraServiceService);
   msg = [
     {
-      detail: "If you don't manage to make everything work, look at this video",
+      detail: "If you don't manage to make it work, look at this video",
       severity: 'secondary',
     },
   ];
+
+  cards = cards;
 
   videoRaw = viewChild.required<ElementRef<HTMLVideoElement>>('video');
   allClickableElements = viewChildren<any>('actionButton');
@@ -49,9 +57,7 @@ export class AppComponent {
 
   rafId = 0;
 
-  repeat = Array(150).fill(
-    '"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."'
-  );
+  repeat = Array(150).fill('""');
 
   detector!: handPoseDetection.HandDetector;
   hands: handPoseDetection.Hand[] = [];
@@ -73,6 +79,11 @@ export class AppComponent {
   cursorElement = viewChild.required<ElementRef>('cursor');
 
   hasClicked = false;
+  visible = false;
+  activeCard = signal<number | null>(null);
+
+  xButton: Signal<ElementRef | null> = signal(null);
+  likeButtonClick: any;
 
   async ngOnInit() {
     this.cameraService.initCamera(this.video());
@@ -158,8 +169,6 @@ export class AppComponent {
           this.previousPosition.middleTipY - currentHandMiddleTipY
         );
 
-        // console.log(yDiffIndex, yDiffMiddle);
-
         window.scrollBy(0, this.actionRequired === 'scroll-down' ? 400 : -400);
       }
     }
@@ -188,7 +197,6 @@ export class AppComponent {
         this.previousHands.length !== 0 &&
         Math.abs(this.topFromIndex() - indexTip.y * this.proportionFactorY) > 30
       ) {
-        console.log('i had hands and now the index is changed more than 20');
         return;
       }
 
@@ -212,7 +220,6 @@ export class AppComponent {
     //--------------------
 
     if (this.handsService.clickGesture(this.hands)) {
-      // console.log('should clikc');
       this.clickRequest();
     }
 
@@ -234,7 +241,6 @@ export class AppComponent {
   }
 
   clickRequest() {
-    console.log(this.hasClicked);
     if (this.hasClicked) return;
 
     const elementToClick = this.allClickableElements().find((element) => {
@@ -260,7 +266,6 @@ export class AppComponent {
     if (!cursor || !otherElement) {
       return;
     }
-    // console.log(cursor, otherElement);
 
     const fixedRect = cursor.getBoundingClientRect();
     const otherRect = otherElement.getBoundingClientRect();
@@ -273,7 +278,7 @@ export class AppComponent {
     );
   }
 
-  cardButtonClick() {
-    console.log('click efent');
-  }
+  cardButtonClick(index: number) {}
+
+  closeButtonClick() {}
 }

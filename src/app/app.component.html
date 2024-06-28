@@ -1,11 +1,17 @@
-<div class="px-7 py-8">
+<div class="px-7 py-8 main-container">
   <div class="flex flex-column align-items-center gap-5">
     <div>
-      <h1>I'm a hand gesture navigable website!</h1>
+      <h1 class="main-title">I'm a hands gestures navigable website!</h1>
     </div>
 
-    <div>
-      I can see: {{ handsNumber }} hand{{ handsNumber > 1 ? "s" : "" }}!
+    <div class="hands-recognition">
+      <span class="text-red-400 underline"
+        >Make sure we can see your hands!</span
+      >
+      <br />
+      I can see:
+      <span class="text-4xl text-red-400 underline">{{ handsNumber }}</span>
+      hand{{ handsNumber > 1 ? "s" : "" }}!
     </div>
 
     <div class="card-container">
@@ -36,7 +42,7 @@
           >
           ).
         </div>
-        <h4>What do you need:</h4>
+        <h4 class="my-3">What do you need:</h4>
         <ul>
           <li>A webcam</li>
           <li>To give your browser camera permissions</li>
@@ -46,25 +52,33 @@
           </li>
         </ul>
       </div>
-      <div class="flex flex-column gap-2 card card-3">
+      <div class="flex flex-column gap-4 card card-3 w-full md:gap-2">
         <h3>What are the gestures?</h3>
-        <div class="flex flex-row align-items-center">
-          <span class="gesture"> Scroll up: </span
-          ><app-tutorial-icon [command]="'scroll-up'" />
+        <div
+          class="flex flex-column md:flex-row align-items-center justify-content-evenly w-full"
+        >
+          <span class="gesture"> Scroll up: </span>
+
+          <app-tutorial-icon [command]="'scroll-up'" />
+
           <span
-            >Hold your <strong>left</strong> hand like the image and move your
+            >Hold your <strong>LEFT</strong> hand like the image and move your
             fingers down</span
           >
         </div>
-        <div class="flex flex-row align-items-center">
+        <div
+          class="flex flex-column md:flex-row align-items-center justify-content-evenly w-full"
+        >
           <span class="gesture">Scroll down: </span
           ><app-tutorial-icon [command]="'scroll-down'" />
           <span
-            >Hold your <strong>right</strong> hand like the image and move your
+            >Hold your <strong>RIGHT</strong> hand like the image and move your
             fingers down</span
           >
         </div>
-        <div class="flex flex-row align-items-center">
+        <div
+          class="flex flex-column md:flex-row align-items-center justify-content-evenly w-full"
+        >
           <span class="gesture">Cursor: </span
           ><app-tutorial-icon [command]="'index-cursor'" />
           <span
@@ -73,7 +87,9 @@
           >
         </div>
 
-        <div class="flex flex-row align-items-center">
+        <div
+          class="flex flex-column md:flex-row align-items-center justify-content-evenly w-full"
+        >
           <span class="gesture">Click: </span
           ><app-tutorial-icon [command]="'click-gesture'" />
           <span
@@ -82,7 +98,7 @@
           >
         </div>
 
-        <div class="flex flex-row align-items-center">
+        <div class="flex flex-column md:flex-row align-items-center underline">
           Please remember that the best spot in which the commands from your
           hands will be recognized is around the center of camera
         </div>
@@ -90,23 +106,40 @@
     </div>
     <p-messages [value]="msg" [enableService]="false" [closable]="false" />
 
-    @for( post of repeat; track $index ){
-    <p-card header="Simple Card" class="my-2">
-      <p class="m-0">
-        {{ post }}
-      </p>
-
-      <button
-        pButton
-        (click)="cardButtonClick()"
-        severity="primary"
-        #actionButton
-        class="my-2 w-full p-fluid"
+    <div class="flex flex-wrap align-items-center justify-content-evenly">
+      @for( post of cards; track $index; let i = $index ){
+      <p-card
+        header="{{ post.title }}"
+        class="my-2 w-full md:w-12 lg:w-5 xl:w-3 post"
       >
-        Open
-      </button>
-    </p-card>
-    }
+        <p class="m-0">
+          {{ post.content }}
+        </p>
+
+        <div class="flex flex-row gap-2">
+          <button
+            [id]="i"
+            pButton
+            (click)="likeButtonClick()"
+            severity="success"
+            #actionButton
+            class="my-2 w-full p-fluid"
+          >
+            Like
+          </button>
+          <button
+            pButton
+            (click)="dislikeButtonClick()"
+            severity="warning"
+            #actionButton
+            class="my-2 w-full p-fluid"
+          >
+            Dislike
+          </button>
+        </div>
+      </p-card>
+      }
+    </div>
   </div>
 
   <div class="w-4 h-4 fixed top-0 right-0 bg-blue-400 border-round-sm p-2">
@@ -121,11 +154,12 @@
 
   <div
     #cursor
-    class="w-1rem h-1rem fixed z-5"
+    class="w-1rem h-1rem fixed cursor"
     [ngStyle]="{
       top: topFromIndex() + 'px',
       right: rightFromIndex() + 'px'
     }"
+    id="cursor"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -162,3 +196,17 @@
   </div>
 </div>
 <video #video id="video" class="w-4 h-4 fixed bottom-0 right-0"></video>
+<div class="absolute top-0 left-0 my-1 mx-2">
+  <img src="camera.png" alt="camera reminder" />
+</div>
+<p-dialog
+  [header]="cards[this.activeCard() ?? 0].title"
+  [modal]="true"
+  [(visible)]="visible"
+  [style]="{ width: '25rem' }"
+>
+  <div>
+    {{ cards[this.activeCard() ?? 0].content }}
+  </div>
+  like - not like
+</p-dialog>
