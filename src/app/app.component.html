@@ -1,6 +1,29 @@
 <div class="px-7 py-8 main-container">
   <div class="flex flex-column align-items-center gap-5">
-    <div>
+    <div class="flex flex-column gap-1 align-items-center">
+      <section class="flex flex-row gap-2">
+        <p-button
+          icon="pi pi-github"
+          severity="help"
+          #actionButton
+          (click)="openLink('https://github.com/fcport')"
+        />
+        <p-button
+          icon="pi pi-linkedin"
+          severity="info"
+          #actionButton
+          (click)="
+            openLink('https://www.linkedin.com/in/federico-casadei-8b572b1b8/')
+          "
+        />
+        <p-button
+          icon="pi pi-external-link"
+          severity="warning"
+          #actionButton
+          (click)="openLink('https://federicocasadei.dev/')"
+        />
+      </section>
+
       <h1 class="main-title">I'm a hands gestures navigable website!</h1>
     </div>
 
@@ -110,7 +133,11 @@
           <span> If you don't manage to make it work, look at this </span>
           <button
             pButton
-            (click)="videoButtonClick()"
+            (click)="
+              openLink(
+                'https://www.linkedin.com/in/federico-casadei-8b572b1b8/'
+              )
+            "
             severity="warning"
             #actionButton
             label="Video"

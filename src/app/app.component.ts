@@ -289,12 +289,9 @@ export class AppComponent {
     });
   }
 
-  videoButtonClick() {
+  openLink(url: string) {
     try {
-      const newWindow = window.open(
-        'https://www.linkedin.com/in/federico-casadei-8b572b1b8/',
-        '_blank'
-      );
+      const newWindow = window.open(url, '_blank');
       console.log('Window open result:', newWindow);
       if (
         !newWindow ||
