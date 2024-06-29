@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -9,16 +10,17 @@ import {
   viewChildren,
 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Button, ButtonModule } from 'primeng/button';
-import { CameraServiceService } from './services/camera-service.service';
 import * as handPoseDetection from '@tensorflow-models/hand-pose-detection';
-import { HandsService } from './services/hands.service';
-import { handKeypoint, cards } from './constants/constants';
+import { MessageService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { CommonModule } from '@angular/common';
-import { TutorialIconComponent } from './components/tutorial-icon/tutorial-icon.component';
-import { MessagesModule } from 'primeng/messages';
 import { DialogModule } from 'primeng/dialog';
+import { MessagesModule } from 'primeng/messages';
+import { ToastModule } from 'primeng/toast';
+import { TutorialIconComponent } from './components/tutorial-icon/tutorial-icon.component';
+import { cards, handKeypoint } from './constants/constants';
+import { CameraServiceService } from './services/camera-service.service';
+import { HandsService } from './services/hands.service';
 
 @Component({
   selector: 'app-root',
@@ -33,22 +35,16 @@ import { DialogModule } from 'primeng/dialog';
     TutorialIconComponent,
     DialogModule,
     MessagesModule,
+    ToastModule,
   ],
+  providers: [MessageService],
 })
 export class AppComponent {
-  dislikeButtonClick() {
-    throw new Error('Method not implemented.');
-  }
   title = 'gesture-control';
   cameraService = inject(CameraServiceService);
-  msg = [
-    {
-      detail: "If you don't manage to make it work, look at this video",
-      severity: 'secondary',
-    },
-  ];
 
   cards = cards;
+  messageService = inject(MessageService);
 
   videoRaw = viewChild.required<ElementRef<HTMLVideoElement>>('video');
   allClickableElements = viewChildren<any>('actionButton');
@@ -83,7 +79,6 @@ export class AppComponent {
   activeCard = signal<number | null>(null);
 
   xButton: Signal<ElementRef | null> = signal(null);
-  likeButtonClick: any;
 
   async ngOnInit() {
     this.cameraService.initCamera(this.video());
@@ -254,7 +249,6 @@ export class AppComponent {
 
     if (elementToClick) {
       this.hasClicked = true;
-      console.log(elementToClick);
       elementToClick.click();
     }
     setTimeout(() => {
@@ -278,7 +272,45 @@ export class AppComponent {
     );
   }
 
-  cardButtonClick(index: number) {}
+  likeButtonClick() {
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Thanks!',
+      detail:
+        'Thanks for liking my post! This is just an interaction I wanted to add on click, so thanks again :D',
+    });
+  }
+  dislikeButtonClick() {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Ouch! :(',
+      detail:
+        "I'm really sad that you didn't like what you read! I hope that you'll change your mind :( ",
+    });
+  }
 
-  closeButtonClick() {}
+  videoButtonClick() {
+    try {
+      const newWindow = window.open(
+        'https://www.linkedin.com/in/federico-casadei-8b572b1b8/',
+        '_blank'
+      );
+      console.log('Window open result:', newWindow);
+      if (
+        !newWindow ||
+        newWindow.closed ||
+        typeof newWindow.closed == 'undefined'
+      ) {
+        console.log('Probably blocked popup');
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail:
+            "Could't open link, you probably have popups blocked! Allow them or try clicking manually to the button",
+        });
+      }
+    } catch (error) {
+      console.error('Error while opening the link:', error);
+    }
+  }
 }

@@ -123,4 +123,19 @@ a {
   @media screen and (min-width: 500px) {
     min-width: 450px;
   }
+
+  .white-space-preline {
+    white-space: pre-line;
+  }
+}
+
+:host ::ng-deep .p-message .p-message-wrapper {
+  background: rgba(255, 242, 226, 1);
+}
+:host ::ng-deep p-toast .p-toast-message.p-toast-message-success {
+  background: rgba(228, 248, 240, 0.1);
+}
+
+:host ::ng-deep p-toast .p-toast-message.p-toast-message-warn {
+  background: rgba(255, 242, 226, 0.1);
 }
