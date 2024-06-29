@@ -2,26 +2,29 @@
   <div class="flex flex-column align-items-center gap-5">
     <div class="flex flex-column gap-1 align-items-center">
       <section class="flex flex-row gap-2">
-        <p-button
+        <button
+          pButton
           icon="pi pi-github"
           severity="help"
           #actionButton
           (click)="openLink('https://github.com/fcport')"
-        />
-        <p-button
+        ></button>
+        <button
+          pButton
           icon="pi pi-linkedin"
           severity="info"
           #actionButton
           (click)="
             openLink('https://www.linkedin.com/in/federico-casadei-8b572b1b8/')
           "
-        />
-        <p-button
+        ></button>
+        <button
+          pButton
           icon="pi pi-external-link"
           severity="warning"
           #actionButton
           (click)="openLink('https://federicocasadei.dev/')"
-        />
+        ></button>
       </section>
 
       <h1 class="main-title">I'm a hands gestures navigable website!</h1>
