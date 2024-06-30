@@ -50,18 +50,12 @@ There are always new features to add and ways to make the user experience smooth
   {
     title: 'How is it built',
     content: `The core of my hand gesture navigable website is built using a combination of TensorFlow.js and MediaPipe, two powerful libraries for machine learning and computer vision. 
-    TensorFlow.js allows me to run complex AI models directly in the browser,
-     while MediaPipe provides efficient real-time hand tracking.\n\n
+    TensorFlow.js allows me to run complex AI models directly in the browser, while MediaPipe provides efficient real-time hand tracking.\n\n
 
-     To create the gesture recognition system,
-      I utilized MediaPipe's pre-trained hand landmark model. 
-      This model detects 21 key points on a hand,
-       which I then use to recognize specific gestures.
-        TensorFlow.js comes into play for custom gesture recognition 
-        based on these landmarks.
+     To create the gesture recognition system, I utilized MediaPipe's pre-trained hand landmark model. This model detects 21 key points on a hand, which I then use to recognize specific gestures. TensorFlow.js comes into play for custom gesture recognition based on these landmarks.
         \n\n
 The front-end of the website is built with Angular. 
-        It was outstanding to find out how extensible can Js (and its frameworks) are even in the matter of AI which i thought was mostly evolved in other laguages like Python.
+        It was outstanding to find out how extensible can Js (and its frameworks) are even in the matter of AI which i thought was mostly evolved in other languages like Python.
          The hand tracking runs in real-time, constantly analyzing the video feed from the user's webcam.
          \n\n
 I had to balance accuracy with speed to ensure the gestures were recognized quickly without slowing down the website, nut either way that recognition was not perfect all the time. As a matter of fact a lot of factors weight in when it comes to accuracy like: the camera image quality, the background, etc...\n\n
@@ -76,12 +70,9 @@ I had to balance accuracy with speed to ensure the gestures were recognized quic
   },
   {
     title: 'Possible benefits',
-    content: `While my project focuses on hand gesture recognition,
-     this technology opens up a world of possibilities for improving accessibility in digital interfaces.
-      One exciting area is eye movement recognition,
-       which could be incredibly beneficial for people with limited mobility.\n\n
-    Eye-tracking technology could allow users to navigate websites,
-     type and many more interacitons using only their eye movements.
+    content: `While my project focuses on hand gesture recognition, this technology opens up a world of possibilities for improving accessibility in digital interfaces.
+      One exciting area is eye movement recognition, which could be incredibly beneficial for people with limited mobility.\n\n
+    Eye-tracking technology could allow users to navigate websites, type and many more interacitons using only their eye movements.
       This would be a game-changer for individuals who can't use traditional input methods like keyboards or mice.
        For example, someone with ALS or severe paralysis could browse the internet or communicate just by moving their eyes.
        \n\n
