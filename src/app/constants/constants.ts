@@ -26,7 +26,7 @@ export const cards = [
   {
     title: 'Why did I choose to start this project',
     content: `I've created a hand gesture navigable website for a few important reasons.
-     First off, I really enjoy studying new technologies and that's ome of the main drive for me.
+     First off, I really enjoy studying new technologies and that's one of the main drives for me.
      The tech world is always evolving, and I find it fascinating to explore cutting-edge solutions.
       This project allowed me to dive into gesture recognition, which is an exciting field with lots of potential.\n\n
 
